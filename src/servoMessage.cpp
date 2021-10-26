@@ -52,18 +52,10 @@ void initServo(const RocketryProto_ServoInit &servoInit)
         servos[servoCount].pin = static_cast<uint8_t>(servoInit.pin);
         servos[servoCount].safePosition = static_cast<int>(servoInit.safePosition);
         servos[servoCount].servo.attach(servoInit.pin);
-        servos[servoCount].servo.write(servoInit.safePosition);
 
         servoCount++;
 
         serialPrintLn("Servo init: pin: ", servoInit.pin, ", safePosition:", servoInit.safePosition);
-    }
-    else
-    {
-        servo->safePosition = servoInit.safePosition;
-
-        controlServo(servoInit.pin, servoInit.safePosition);
-        serialPrintLn("Servo 2nd time init: pin: ", servoInit.pin, ", safePosition:", servoInit.safePosition);
     }
 }
 

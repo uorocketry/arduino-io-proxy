@@ -39,10 +39,6 @@ void initDigital(const RocketryProto_DigitalInit &digitalInit)
 
         serialPrintLn("Digital init: pin: ", pin);
     }
-    else
-    {
-        controlDigital(pin, false);
-    }
 }
 
 void controlDigital(const RocketryProto_DigitalControl &digitalControl)
