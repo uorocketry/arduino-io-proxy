@@ -3,9 +3,9 @@
 #include "utils.h"
 #include <Arduino.h>
 #include <ArduinoComm.pb.h>
-#include <PacketSerial.h>
 #include <main.h>
 #include <pb_decode.h>
+#include "logging.h"
 
 COBSPacketSerial cobsPacketSerial;
 
@@ -14,6 +14,8 @@ void setup()
     cobsPacketSerial.begin(57600);
 
     cobsPacketSerial.setPacketHandler(&onPacketReceived);
+
+    sendEventMessage(RocketryProto_EventTypes_RESET);
 }
 
 void loop()
@@ -34,7 +36,7 @@ void onPacketReceived(const uint8_t *buffer, size_t size)
 
     if (!pb_decode(&stream, RocketryProto_ArduinoIn_fields, &message))
     {
-        serialPrintLn("Error decoding message: ", stream.errmsg);
+        sendErrorMessage(RocketryProto_ErrorTypes_DECODE_ERROR);
         return;
     }
 
@@ -56,6 +58,6 @@ void onPacketReceived(const uint8_t *buffer, size_t size)
         resetFunc();
         break;
     default:
-        serialPrintLn("Unknown message type. Ignoring request.");
+        sendErrorMessage(RocketryProto_ErrorTypes_UNKNOWN_MESSAGE);
     }
 }

@@ -1,6 +1,7 @@
 #include "servoMessage.h"
 #include "Arduino.h"
 #include "utils.h"
+#include <logging.h>
 
 // Servo Information
 constexpr int maxServoCount = 12;
@@ -27,13 +28,13 @@ void controlServo(uint8_t pin, int position)
 
     if (servo != nullptr)
     {
-        serialPrintLn("Servo control: pin: ", pin, ", position: ", position);
+        sendEventMessage(RocketryProto_EventTypes_SERVO_CONTROL, pin);
 
         servo->servo.write(position);
     }
     else
     {
-        serialPrintLn("Servo ", pin, " is not initialized. Ignoring request.");
+        sendErrorMessage(RocketryProto_ErrorTypes_PIN_NOT_INITIALIZED, pin);
     }
 }
 
@@ -55,7 +56,7 @@ void initServo(const RocketryProto_ServoInit &servoInit)
 
         servoCount++;
 
-        serialPrintLn("Servo init: pin: ", servoInit.pin, ", safePosition:", servoInit.safePosition);
+        sendEventMessage(RocketryProto_EventTypes_SERVO_INIT, servoInit.pin);
     }
 }
 
