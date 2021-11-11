@@ -1,11 +1,11 @@
 #include "digitalMessage.h"
+#include "logging.h"
 #include "servoMessage.h"
 #include "utils.h"
 #include <Arduino.h>
 #include <ArduinoComm.pb.h>
 #include <main.h>
 #include <pb_decode.h>
-#include "logging.h"
 
 COBSPacketSerial cobsPacketSerial;
 

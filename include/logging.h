@@ -1,6 +1,6 @@
 #pragma once
-#include <ArduinoComm.pb.h>
 #include "Arduino.h"
+#include <ArduinoComm.pb.h>
 
 void sendEventMessage(RocketryProto_EventTypes type);
 void sendEventMessage(RocketryProto_EventTypes type, int32_t data);

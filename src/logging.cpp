@@ -2,11 +2,13 @@
 #include "main.h"
 #include <pb_encode.h>
 
-void sendEventMessage(RocketryProto_EventTypes type) {
+void sendEventMessage(RocketryProto_EventTypes type)
+{
     sendEventMessage(type, 0);
 }
 
-void sendEventMessage(RocketryProto_EventTypes type, int32_t data) {
+void sendEventMessage(RocketryProto_EventTypes type, int32_t data)
+{
     RocketryProto_ArduinoOut msg = RocketryProto_ArduinoOut_init_zero;
     msg.which_data = RocketryProto_ArduinoOut_eventMessage_tag;
 
@@ -27,11 +29,13 @@ void sendEventMessage(RocketryProto_EventTypes type, int32_t data) {
     delete[] buf;
 }
 
-void sendErrorMessage(RocketryProto_ErrorTypes type) {
+void sendErrorMessage(RocketryProto_ErrorTypes type)
+{
     sendErrorMessage(type, 0);
 }
 
-void sendErrorMessage(RocketryProto_ErrorTypes type, int32_t data) {
+void sendErrorMessage(RocketryProto_ErrorTypes type, int32_t data)
+{
     RocketryProto_ArduinoOut msg = RocketryProto_ArduinoOut_init_zero;
     msg.which_data = RocketryProto_ArduinoOut_errorMessage_tag;
 
