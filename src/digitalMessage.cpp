@@ -1,6 +1,7 @@
 #include "digitalMessage.h"
 #include "Arduino.h"
 #include "utils.h"
+#include <logging.h>
 
 // Servo Information
 constexpr int maxDigitalPins = 20;
@@ -11,11 +12,11 @@ void controlDigital(uint8_t pin, bool activate)
 {
     if (!arrayContains(enabledDigitalPins, digitalCount, pin))
     {
-        serialPrintLn("Digital pin ", pin, " is not initialized. Ignoring request.");
+        sendErrorMessage(RocketryProto_ErrorTypes_PIN_NOT_INITIALIZED, pin);
         return;
     }
 
-    serialPrintLn("Digital control: pin: ", pin, ", activate: ", activate);
+    sendEventMessage(RocketryProto_EventTypes_DIGITAL_CONTROL, pin);
 
     digitalWrite(pin, activate);
 }
@@ -37,7 +38,7 @@ void initDigital(const RocketryProto_DigitalInit &digitalInit)
         enabledDigitalPins[digitalCount] = pin;
         digitalCount++;
 
-        serialPrintLn("Digital init: pin: ", pin);
+        sendEventMessage(RocketryProto_EventTypes_DIGITAL_INIT, pin);
     }
 }
 
