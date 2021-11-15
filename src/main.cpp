@@ -27,6 +27,7 @@ void loop()
     if (millis() - lastStateSend > 1000)
     {
         sendServoState();
+        sendDigitalState();
         lastStateSend = millis();
     }
 }
