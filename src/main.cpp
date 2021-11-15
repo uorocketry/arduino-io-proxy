@@ -8,6 +8,7 @@
 #include <pb_decode.h>
 
 COBSPacketSerial cobsPacketSerial;
+long lastStateSend = 0;
 
 void setup()
 {
@@ -21,6 +22,13 @@ void setup()
 void loop()
 {
     cobsPacketSerial.update();
+
+    // Send state each second
+    if (millis() - lastStateSend > 1000)
+    {
+        sendServoState();
+        lastStateSend = millis();
+    }
 }
 
 void (*resetFunc)(void) = 0;
