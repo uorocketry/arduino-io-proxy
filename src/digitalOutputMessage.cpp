@@ -50,6 +50,7 @@ void initDigitalOutput(const RocketryProto_DigitalOutputInit &message)
         // Ignore if we don't have any more free servos
         if (maxDigitalPins == digitalCount)
         {
+            sendErrorMessage(RocketryProto_ErrorTypes_OUT_OF_PINS);
             return;
         }
 

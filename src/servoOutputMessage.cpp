@@ -51,6 +51,7 @@ void initServoOutput(const RocketryProto_ServoOutputInit &message)
         // Ignore if we don't have any more free servos
         if (maxServoCount == servoCount)
         {
+            sendErrorMessage(RocketryProto_ErrorTypes_OUT_OF_PINS);
             return;
         }
 
