@@ -35,15 +35,15 @@ void controlDigital(uint8_t pin, bool activate)
         return;
     }
 
-    sendEventMessage(RocketryProto_EventTypes_DIGITAL_CONTROL, pin);
+    sendEventMessage(RocketryProto_EventTypes_DIGITAL_OUTPUT_CONTROL, pin);
 
     digitalWrite(pin, activate);
     digital->activated = activate;
 }
 
-void initDigital(const RocketryProto_DigitalInit &digitalInit)
+void initDigitalOutput(const RocketryProto_DigitalOutputInit &message)
 {
-    uint8_t pin = digitalInit.pin;
+    uint8_t pin = message.pin;
 
     if (findDigital(pin) == nullptr)
     {
@@ -59,25 +59,25 @@ void initDigital(const RocketryProto_DigitalInit &digitalInit)
         digitalPins[digitalCount].activated = false;
         digitalCount++;
 
-        sendEventMessage(RocketryProto_EventTypes_DIGITAL_INIT, pin);
+        sendEventMessage(RocketryProto_EventTypes_DIGITAL_OUTPUT_INIT, pin);
     }
 }
 
-void controlDigital(const RocketryProto_DigitalControl &digitalControl)
+void controlDigitalOutput(const RocketryProto_DigitalOutputControl &message)
 {
-    controlDigital(digitalControl.pin, digitalControl.activate);
+    controlDigital(message.pin, message.activate);
 }
 
-void sendDigitalState()
+void sendDigitalOutputState()
 {
     for (uint16_t i = 0; i < digitalCount; i++)
     {
         const DigitalInfo &info = digitalPins[i];
 
         RocketryProto_ArduinoOut msg = RocketryProto_ArduinoOut_init_zero;
-        msg.which_data = RocketryProto_ArduinoOut_digitalState_tag;
+        msg.which_data = RocketryProto_ArduinoOut_digitalOutputState_tag;
 
-        RocketryProto_DigitalState &state = msg.data.digitalState;
+        RocketryProto_DigitalOutputState &state = msg.data.digitalOutputState;
         state.pin = info.pin;
         state.activated = info.activated;
 

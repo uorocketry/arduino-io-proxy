@@ -8,6 +8,6 @@ struct DigitalInfo
     bool activated;
 };
 
-void initDigital(const RocketryProto_DigitalInit &message);
-void controlDigital(const RocketryProto_DigitalControl &message);
-void sendDigitalState();
+void initDigitalOutput(const RocketryProto_DigitalOutputInit &message);
+void controlDigitalOutput(const RocketryProto_DigitalOutputControl &message);
+void sendDigitalOutputState();

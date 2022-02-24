@@ -11,6 +11,6 @@ struct ServoInfo
     int currentPosition;
 };
 
-void initServo(const RocketryProto_ServoInit &message);
-void controlServo(const RocketryProto_ServoControl &message);
-void sendServoState();
+void initServoOutput(const RocketryProto_ServoOutputInit &message);
+void controlServoOutput(const RocketryProto_ServoOutputControl &message);
+void sendServoOutputState();
