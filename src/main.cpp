@@ -1,6 +1,7 @@
 #include "digitalOutputMessage.h"
 #include "logging.h"
 #include "servoOutputMessage.h"
+#include "analogInputMessage.h"
 #include "utils.h"
 #include <Arduino.h>
 #include <ArduinoComm.pb.h>
@@ -23,13 +24,16 @@ void loop()
 {
     cobsPacketSerial.update();
 
-    // Send outpu state each second
+    // Send output state each second
     if (millis() - lastOutputStateSend > 1000)
     {
         sendServoOutputState();
         sendDigitalOutputState();
         lastOutputStateSend = millis();
     }
+
+    // Always call this function. Each pin has a different update time.
+    sendAnalogInputState();
 }
 
 void (*resetFunc)(void) = 0;
@@ -63,6 +67,8 @@ void onPacketReceived(const uint8_t *buffer, size_t size)
     case RocketryProto_ArduinoIn_digitalOutputControl_tag:
         controlDigitalOutput(message.data.digitalOutputControl);
         break;
+    case RocketryProto_ArduinoIn_analogInputInit_tag:
+        initAnalogInput(message.data.analogInputInit);
     case RocketryProto_ArduinoIn_reset_tag:
         resetFunc();
         break;
