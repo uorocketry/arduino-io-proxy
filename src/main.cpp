@@ -1,6 +1,6 @@
-#include "digitalMessage.h"
+#include "digitalOutputMessage.h"
 #include "logging.h"
-#include "servoMessage.h"
+#include "servoOutputMessage.h"
 #include "utils.h"
 #include <Arduino.h>
 #include <ArduinoComm.pb.h>

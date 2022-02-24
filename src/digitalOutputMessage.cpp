@@ -1,4 +1,4 @@
-#include "digitalMessage.h"
+#include "digitalOutputMessage.h"
 #include "Arduino.h"
 #include "ArduinoComm.pb.h"
 #include "main.h"
@@ -8,14 +8,14 @@
 
 // Servo Information
 constexpr int maxDigitalPins = 20;
-DigitalInfo digitalPins[maxDigitalPins];
+DigitalOutputInfo digitalPins[maxDigitalPins];
 uint16_t digitalCount = 0;
 
-DigitalInfo *findDigital(int pin)
+DigitalOutputInfo *findDigital(int pin)
 {
     for (uint16_t i = 0; i < digitalCount; i++)
     {
-        DigitalInfo &digital = digitalPins[i];
+        DigitalOutputInfo &digital = digitalPins[i];
         if (digital.pin == pin)
         {
             return &digital;
@@ -27,7 +27,7 @@ DigitalInfo *findDigital(int pin)
 
 void controlDigital(uint8_t pin, bool activate)
 {
-    DigitalInfo *digital = findDigital(pin);
+    DigitalOutputInfo *digital = findDigital(pin);
 
     if (digital == nullptr)
     {
@@ -72,7 +72,7 @@ void sendDigitalOutputState()
 {
     for (uint16_t i = 0; i < digitalCount; i++)
     {
-        const DigitalInfo &info = digitalPins[i];
+        const DigitalOutputInfo &info = digitalPins[i];
 
         RocketryProto_ArduinoOut msg = RocketryProto_ArduinoOut_init_zero;
         msg.which_data = RocketryProto_ArduinoOut_digitalOutputState_tag;

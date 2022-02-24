@@ -1,4 +1,4 @@
-#include "servoMessage.h"
+#include "servoOutputMessage.h"
 #include "Arduino.h"
 #include "ArduinoComm.pb.h"
 #include "main.h"
@@ -8,14 +8,14 @@
 
 // Servo Information
 constexpr int maxServoCount = 12;
-ServoInfo servos[maxServoCount];
+ServoOutputInfo servos[maxServoCount];
 uint16_t servoCount = 0;
 
-ServoInfo *findServo(int pin)
+ServoOutputInfo *findServo(int pin)
 {
     for (uint16_t i = 0; i < servoCount; i++)
     {
-        ServoInfo &servo = servos[i];
+        ServoOutputInfo &servo = servos[i];
         if (servo.pin == pin)
         {
             return &servo;
@@ -27,7 +27,7 @@ ServoInfo *findServo(int pin)
 
 void controlServo(uint8_t pin, int position)
 {
-    ServoInfo *servo = findServo(pin);
+    ServoOutputInfo *servo = findServo(pin);
 
     if (servo != nullptr)
     {
@@ -44,7 +44,7 @@ void controlServo(uint8_t pin, int position)
 
 void initServoOutput(const RocketryProto_ServoOutputInit &message)
 {
-    ServoInfo *servo = findServo(message.pin);
+    ServoOutputInfo *servo = findServo(message.pin);
 
     if (servo == nullptr)
     {
@@ -74,7 +74,7 @@ void sendServoOutputState()
 {
     for (uint16_t i = 0; i < servoCount; i++)
     {
-        const ServoInfo &info = servos[i];
+        const ServoOutputInfo &info = servos[i];
 
         RocketryProto_ArduinoOut msg = RocketryProto_ArduinoOut_init_zero;
         msg.which_data = RocketryProto_ArduinoOut_servoOutputState_tag;

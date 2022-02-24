@@ -3,12 +3,12 @@
 #include "ArduinoComm.pb.h"
 #include "Servo.h"
 
-struct ServoInfo
+struct ServoOutputInfo
 {
     Servo servo;
-    uint8_t pin;
-    int safePosition;
-    int currentPosition;
+    uint8_t pin{};
+    int safePosition{};
+    int currentPosition{};
 };
 
 void initServoOutput(const RocketryProto_ServoOutputInit &message);

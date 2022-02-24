@@ -2,7 +2,7 @@
 
 #include "ArduinoComm.pb.h"
 
-struct DigitalInfo
+struct DigitalOutputInfo
 {
     uint8_t pin;
     bool activated;
