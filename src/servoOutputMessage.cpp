@@ -1,4 +1,4 @@
-#include "servoMessage.h"
+#include "servoOutputMessage.h"
 #include "Arduino.h"
 #include "ArduinoComm.pb.h"
 #include "main.h"
@@ -8,14 +8,14 @@
 
 // Servo Information
 constexpr int maxServoCount = 12;
-ServoInfo servos[maxServoCount];
+ServoOutputInfo servos[maxServoCount];
 uint16_t servoCount = 0;
 
-ServoInfo *findServo(int pin)
+ServoOutputInfo *findServo(int pin)
 {
     for (uint16_t i = 0; i < servoCount; i++)
     {
-        ServoInfo &servo = servos[i];
+        ServoOutputInfo &servo = servos[i];
         if (servo.pin == pin)
         {
             return &servo;
@@ -27,11 +27,11 @@ ServoInfo *findServo(int pin)
 
 void controlServo(uint8_t pin, int position)
 {
-    ServoInfo *servo = findServo(pin);
+    ServoOutputInfo *servo = findServo(pin);
 
     if (servo != nullptr)
     {
-        sendEventMessage(RocketryProto_EventTypes_SERVO_CONTROL, pin);
+        sendEventMessage(RocketryProto_EventTypes_SERVO_OUTPUT_CONTROL, pin);
 
         servo->servo.write(position);
         servo->currentPosition = position;
@@ -42,44 +42,45 @@ void controlServo(uint8_t pin, int position)
     }
 }
 
-void initServo(const RocketryProto_ServoInit &servoInit)
+void initServoOutput(const RocketryProto_ServoOutputInit &message)
 {
-    ServoInfo *servo = findServo(servoInit.pin);
+    ServoOutputInfo *servo = findServo(message.pin);
 
     if (servo == nullptr)
     {
         // Ignore if we don't have any more free servos
         if (maxServoCount == servoCount)
         {
+            sendErrorMessage(RocketryProto_ErrorTypes_OUT_OF_PINS);
             return;
         }
 
-        servos[servoCount].pin = static_cast<uint8_t>(servoInit.pin);
-        servos[servoCount].safePosition = static_cast<int>(servoInit.safePosition);
-        servos[servoCount].servo.attach(servoInit.pin);
+        servos[servoCount].pin = static_cast<uint8_t>(message.pin);
+        servos[servoCount].safePosition = static_cast<int>(message.safePosition);
+        servos[servoCount].servo.attach(message.pin);
         servos[servoCount].currentPosition = -1;
 
         servoCount++;
 
-        sendEventMessage(RocketryProto_EventTypes_SERVO_INIT, servoInit.pin);
+        sendEventMessage(RocketryProto_EventTypes_SERVO_OUTPUT_INIT, message.pin);
     }
 }
 
-void controlServo(const RocketryProto_ServoControl &servoControl)
+void controlServoOutput(const RocketryProto_ServoOutputControl &message)
 {
-    controlServo(servoControl.pin, servoControl.position);
+    controlServo(message.pin, message.position);
 }
 
-void sendServoState()
+void sendServoOutputState()
 {
     for (uint16_t i = 0; i < servoCount; i++)
     {
-        const ServoInfo &info = servos[i];
+        const ServoOutputInfo &info = servos[i];
 
         RocketryProto_ArduinoOut msg = RocketryProto_ArduinoOut_init_zero;
-        msg.which_data = RocketryProto_ArduinoOut_servoState_tag;
+        msg.which_data = RocketryProto_ArduinoOut_servoOutputState_tag;
 
-        RocketryProto_ServoState &state = msg.data.servoState;
+        RocketryProto_ServoOutputState &state = msg.data.servoOutputState;
         state.pin = info.pin;
         state.position = info.currentPosition;
 

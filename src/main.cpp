@@ -1,6 +1,7 @@
-#include "digitalMessage.h"
+#include "digitalOutputMessage.h"
 #include "logging.h"
-#include "servoMessage.h"
+#include "servoOutputMessage.h"
+#include "analogInputMessage.h"
 #include "utils.h"
 #include <Arduino.h>
 #include <ArduinoComm.pb.h>
@@ -8,7 +9,7 @@
 #include <pb_decode.h>
 
 COBSPacketSerial cobsPacketSerial;
-long lastStateSend = 0;
+long lastOutputStateSend = 0;
 
 void setup()
 {
@@ -23,13 +24,16 @@ void loop()
 {
     cobsPacketSerial.update();
 
-    // Send state each second
-    if (millis() - lastStateSend > 1000)
+    // Send output state each second
+    if (millis() - lastOutputStateSend > 1000)
     {
-        sendServoState();
-        sendDigitalState();
-        lastStateSend = millis();
+        sendServoOutputState();
+        sendDigitalOutputState();
+        lastOutputStateSend = millis();
     }
+
+    // Always call this function. Each pin has a different update time.
+    sendAnalogInputState();
 }
 
 void (*resetFunc)(void) = 0;
@@ -51,18 +55,20 @@ void onPacketReceived(const uint8_t *buffer, size_t size)
 
     switch (message.which_data)
     {
-    case RocketryProto_ArduinoIn_servoInit_tag:
-        initServo(message.data.servoInit);
+    case RocketryProto_ArduinoIn_servoOutputInit_tag:
+        initServoOutput(message.data.servoOutputInit);
         break;
-    case RocketryProto_ArduinoIn_servoControl_tag:
-        controlServo(message.data.servoControl);
+    case RocketryProto_ArduinoIn_servoOutputControl_tag:
+        controlServoOutput(message.data.servoOutputControl);
         break;
-    case RocketryProto_ArduinoIn_digitalInit_tag:
-        initDigital(message.data.digitalInit);
+    case RocketryProto_ArduinoIn_digitalOutputInit_tag:
+        initDigitalOutput(message.data.digitalOutputInit);
         break;
-    case RocketryProto_ArduinoIn_digitalControl_tag:
-        controlDigital(message.data.digitalControl);
+    case RocketryProto_ArduinoIn_digitalOutputControl_tag:
+        controlDigitalOutput(message.data.digitalOutputControl);
         break;
+    case RocketryProto_ArduinoIn_analogInputInit_tag:
+        initAnalogInput(message.data.analogInputInit);
     case RocketryProto_ArduinoIn_reset_tag:
         resetFunc();
         break;
