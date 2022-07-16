@@ -1,6 +1,7 @@
 #include "digitalMessage.h"
 #include "logging.h"
 #include "servoMessage.h"
+#include "dcMotorMessage.h"
 #include "utils.h"
 #include <Arduino.h>
 #include <ArduinoComm.pb.h>
@@ -28,8 +29,11 @@ void loop()
     {
         sendServoState();
         sendDigitalState();
+        sendDCMotorState();
         lastStateSend = millis();
     }
+
+    dcMotorControlLoop();
 }
 
 void (*resetFunc)(void) = 0;
@@ -62,6 +66,12 @@ void onPacketReceived(const uint8_t *buffer, size_t size)
         break;
     case RocketryProto_ArduinoIn_digitalControl_tag:
         controlDigital(message.data.digitalControl);
+        break;
+    case RocketryProto_ArduinoIn_dcMotorInit_tag:
+        initDCMotor(message.data.dcMotorInit);
+        break;
+    case RocketryProto_ArduinoIn_dcMotorControl_tag:
+        controlDCMotor(message.data.dcMotorControl);
         break;
     case RocketryProto_ArduinoIn_reset_tag:
         resetFunc();
