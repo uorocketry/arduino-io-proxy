@@ -81,20 +81,20 @@ void initDCMotor(const RocketryProto_DCMotorInit &motorInit)
             return;
         }
 
-        motor[motorCount].limitSwitchMinPin = motorInit.limitSwitchMinPin;
-        motor[motorCount].limitSwitchMaxPin = motorInit.limitSwitchMaxPin;
-        motor[motorCount].potentiometerPin = motorInit.potentiometerPin;
-        motor[motorCount].motorForwardPin = motorInit.motorForwardPin;
-        motor[motorCount].motorReversePin = motorInit.motorReversePin;
-        motor[motorCount].motorPower = motorInit.motorPower;
+        dcMotors[motorCount].limitSwitchMinPin = motorInit.limitSwitchMinPin;
+        dcMotors[motorCount].limitSwitchMaxPin = motorInit.limitSwitchMaxPin;
+        dcMotors[motorCount].potentiometerPin = motorInit.potentiometerPin;
+        dcMotors[motorCount].motorForwardPin = motorInit.motorForwardPin;
+        dcMotors[motorCount].motorReversePin = motorInit.motorReversePin;
+        dcMotors[motorCount].motorPower = motorInit.motorPower;
 
-        pinMode(motor[motorCount].limitSwitchMinPin, INPUT);
-        pinMode(motor[motorCount].limitSwitchMaxPin, INPUT);
+        pinMode(dcMotors[motorCount].limitSwitchMinPin, INPUT);
+        pinMode(dcMotors[motorCount].limitSwitchMaxPin, INPUT);
 
-        pinMode(motor[motorCount].potentiometerPin, INPUT); // todo: do we want pull up
+        pinMode(dcMotors[motorCount].potentiometerPin, INPUT); // todo: do we want pull up
 
-        pinMode(motor[motorCount].motorForwardPin, INPUT);
-        pinMode(motor[motorCount].motorReversePin, INPUT);
+        pinMode(dcMotors[motorCount].motorForwardPin, INPUT);
+        pinMode(dcMotors[motorCount].motorReversePin, INPUT);
 
         motorCount++;
 
