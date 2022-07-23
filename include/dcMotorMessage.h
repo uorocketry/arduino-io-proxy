@@ -3,8 +3,9 @@
 #include "ArduinoComm.pb.h"
 
 enum DCMotorDirection {
-    Opening,
-    Closing
+    Forward,
+    Reverse,
+    Stopped
 };
 
 struct DCMotorInfo {
@@ -18,7 +19,7 @@ struct DCMotorInfo {
     bool active = false;
     int targetPosition = 0;
     int lastPosition = 0;
-    DCMotorDirection direction;
+    DCMotorDirection direction = DCMotorDirection::Stopped;
 };
 
 void initDCMotor(const RocketryProto_DCMotorInit &message);

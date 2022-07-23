@@ -26,18 +26,21 @@ DCMotorInfo *findDCMotor(uint8_t forwardPin, uint8_t reversePin)
 
 void forward(DCMotorInfo &info)
 {
+    info.direction = DCMotorDirection::Forward;
     analogWrite(info.motorForwardPin, info.motorPower);
     analogWrite(info.motorReversePin, 0);
 }
 
 void reverse(DCMotorInfo &info)
 {
+    info.direction = DCMotorDirection::Reverse;
     analogWrite(info.motorForwardPin, 0);
     analogWrite(info.motorReversePin, info.motorPower);
 }
 
 void stop(DCMotorInfo &info)
 {
+    info.direction = DCMotorDirection::Stopped;
     analogWrite(info.motorForwardPin, 0);
     analogWrite(info.motorReversePin, 0);
 }
@@ -55,12 +58,10 @@ void controlDCMotor(uint8_t forwardPin, uint8_t reversePin, int position)
 
         if (motor->lastPosition < position) {
             forward(*motor);
-            motor->direction = DCMotorDirection::Closing;
         } else if (motor->lastPosition == position) {
             stop(*motor);
         } else {
             reverse(*motor);
-            motor->direction = DCMotorDirection::Opening;
         }
     }
     else
@@ -118,10 +119,10 @@ void dcMotorControlLoop()
             bool limitMin = digitalRead(dcMotors[i].limitSwitchMinPin);
             bool limitMax = digitalRead(dcMotors[i].limitSwitchMaxPin);
 
-            if ((direction == DCMotorDirection::Opening && limitMin)
-                || (direction == DCMotorDirection::Closing && limitMax)
-                || (position < dcMotors[i].targetPosition && position > dcMotors[i].lastPosition)
-                || (position > dcMotors[i].targetPosition && position < dcMotors[i].lastPosition))
+            if ((direction == DCMotorDirection::Reverse && limitMin)
+                || (direction == DCMotorDirection::Forward && limitMax)
+                || (position < dcMotors[i].targetPosition && direction == DCMotorDirection::Reverse)
+                || (position > dcMotors[i].targetPosition && direction == DCMotorDirection::Forward))
             {
                 dcMotors[i].active = false;
                 stop(dcMotors[i]);
@@ -146,6 +147,17 @@ void sendDCMotorState()
         state.motorForwardPin = info.motorForwardPin;
         state.motorReversePin = info.motorReversePin;
         state.position = info.lastPosition;
+        switch (info.direction) {
+            case DCMotorDirection::Stopped:
+                state.direction = 0;
+                break;
+            case DCMotorDirection::Forward:
+                state.direction = 1;
+                break;
+            case DCMotorDirection::Reverse:
+                state.direction = -1;
+                break;
+        }
 
         pb_ostream_t sizestream = {nullptr};
         pb_encode(&sizestream, RocketryProto_ArduinoOut_fields, &msg);
