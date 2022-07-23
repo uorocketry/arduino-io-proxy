@@ -15,9 +15,9 @@ struct DCMotorInfo {
     uint8_t motorReversePin;
     uint8_t motorPower;
 
-    bool active;
-    int targetPosition;
-    int lastPosition;
+    bool active = false;
+    int targetPosition = 0;
+    int lastPosition = 0;
     DCMotorDirection direction;
 };
 

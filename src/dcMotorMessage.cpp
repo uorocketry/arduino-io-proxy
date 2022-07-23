@@ -91,10 +91,10 @@ void initDCMotor(const RocketryProto_DCMotorInit &motorInit)
         pinMode(dcMotors[motorCount].limitSwitchMinPin, INPUT);
         pinMode(dcMotors[motorCount].limitSwitchMaxPin, INPUT);
 
-        pinMode(dcMotors[motorCount].potentiometerPin, INPUT); // todo: do we want pull up
+        pinMode(dcMotors[motorCount].potentiometerPin, INPUT_PULLUP); // todo: do we want pull up
 
-        pinMode(dcMotors[motorCount].motorForwardPin, INPUT);
-        pinMode(dcMotors[motorCount].motorReversePin, INPUT);
+        pinMode(dcMotors[motorCount].motorForwardPin, OUTPUT);
+        pinMode(dcMotors[motorCount].motorReversePin, OUTPUT);
 
         motorCount++;
 
@@ -112,9 +112,8 @@ void dcMotorControlLoop()
 {
     for (uint16_t i = 0; i < motorCount; i++)
     {
+        int position = analogRead(dcMotors[i].potentiometerPin);
         if (dcMotors[i].active) {
-            int position = analogRead(dcMotors[i].potentiometerPin);
-
             DCMotorDirection direction = dcMotors[i].direction;
             bool limitMin = digitalRead(dcMotors[i].limitSwitchMinPin);
             bool limitMax = digitalRead(dcMotors[i].limitSwitchMaxPin);
@@ -128,8 +127,9 @@ void dcMotorControlLoop()
                 stop(dcMotors[i]);
             }
 
-            dcMotors[i].lastPosition = position;
         }
+
+        dcMotors[i].lastPosition = position;
     }
 }
 
@@ -140,7 +140,7 @@ void sendDCMotorState()
         const DCMotorInfo &info = dcMotors[i];
 
         RocketryProto_ArduinoOut msg = RocketryProto_ArduinoOut_init_zero;
-        msg.which_data = RocketryProto_ArduinoOut_servoState_tag;
+        msg.which_data = RocketryProto_ArduinoOut_dcMotorState_tag;
 
         RocketryProto_DCMotorState &state = msg.data.dcMotorState;
         state.motorForwardPin = info.motorForwardPin;
