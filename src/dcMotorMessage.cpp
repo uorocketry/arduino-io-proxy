@@ -56,11 +56,16 @@ void controlDCMotor(uint8_t forwardPin, uint8_t reversePin, int position)
         motor->targetPosition = position;
         motor->active = true;
 
-        if (motor->lastPosition < position) {
+        if (motor->lastPosition < position)
+        {
             forward(*motor);
-        } else if (motor->lastPosition == position) {
+        }
+        else if (motor->lastPosition == position)
+        {
             stop(*motor);
-        } else {
+        }
+        else
+        {
             reverse(*motor);
         }
     }
@@ -99,7 +104,7 @@ void initDCMotor(const RocketryProto_DCMotorInit &motorInit)
 
         motorCount++;
 
-        //todo: new message type
+        // todo: new message type
         sendEventMessage(RocketryProto_EventTypes_DC_MOTOR_INIT, motorInit.motorForwardPin);
     }
 }
@@ -114,20 +119,20 @@ void dcMotorControlLoop()
     for (uint16_t i = 0; i < motorCount; i++)
     {
         int position = analogRead(dcMotors[i].potentiometerPin);
-        if (dcMotors[i].active) {
+        if (dcMotors[i].active)
+        {
             DCMotorDirection direction = dcMotors[i].direction;
             bool limitMin = digitalRead(dcMotors[i].limitSwitchMinPin);
             bool limitMax = digitalRead(dcMotors[i].limitSwitchMaxPin);
 
-            if ((direction == DCMotorDirection::Reverse && limitMin)
-                || (direction == DCMotorDirection::Forward && limitMax)
-                || (position < dcMotors[i].targetPosition && direction == DCMotorDirection::Reverse)
-                || (position > dcMotors[i].targetPosition && direction == DCMotorDirection::Forward))
+            if ((direction == DCMotorDirection::Reverse && limitMin) ||
+                (direction == DCMotorDirection::Forward && limitMax) ||
+                (position < dcMotors[i].targetPosition && direction == DCMotorDirection::Reverse) ||
+                (position > dcMotors[i].targetPosition && direction == DCMotorDirection::Forward))
             {
                 dcMotors[i].active = false;
                 stop(dcMotors[i]);
             }
-
         }
 
         dcMotors[i].lastPosition = position;
@@ -147,16 +152,17 @@ void sendDCMotorState()
         state.motorForwardPin = info.motorForwardPin;
         state.motorReversePin = info.motorReversePin;
         state.position = info.lastPosition;
-        switch (info.direction) {
-            case DCMotorDirection::Stopped:
-                state.direction = 0;
-                break;
-            case DCMotorDirection::Forward:
-                state.direction = 1;
-                break;
-            case DCMotorDirection::Reverse:
-                state.direction = -1;
-                break;
+        switch (info.direction)
+        {
+        case DCMotorDirection::Stopped:
+            state.direction = 0;
+            break;
+        case DCMotorDirection::Forward:
+            state.direction = 1;
+            break;
+        case DCMotorDirection::Reverse:
+            state.direction = -1;
+            break;
         }
 
         pb_ostream_t sizestream = {nullptr};

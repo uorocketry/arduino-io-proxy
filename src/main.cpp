@@ -1,7 +1,7 @@
+#include "dcMotorMessage.h"
 #include "digitalMessage.h"
 #include "logging.h"
 #include "servoMessage.h"
-#include "dcMotorMessage.h"
 #include "utils.h"
 #include <Arduino.h>
 #include <ArduinoComm.pb.h>

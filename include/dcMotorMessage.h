@@ -2,13 +2,15 @@
 
 #include "ArduinoComm.pb.h"
 
-enum DCMotorDirection {
+enum DCMotorDirection
+{
     Forward,
     Reverse,
     Stopped
 };
 
-struct DCMotorInfo {
+struct DCMotorInfo
+{
     uint8_t limitSwitchMinPin;
     uint8_t limitSwitchMaxPin;
     uint8_t potentiometerPin;
