@@ -25,7 +25,7 @@ void loop()
     cobsPacketSerial.update();
 
     // Send state each second
-    if (millis() - lastStateSend > 1000)
+    if (millis() - lastStateSend > 50)
     {
         sendServoState();
         sendDigitalState();
