@@ -152,6 +152,8 @@ void sendDCMotorState()
         state.motorForwardPin = info.motorForwardPin;
         state.motorReversePin = info.motorReversePin;
         state.position = info.lastPosition;
+        state.minLimitSwitch = info.minLimitSwitch;
+        state.maxLimitSwitch = info.maxLimitSwitch;
         switch (info.direction)
         {
         case DCMotorDirection::Stopped:

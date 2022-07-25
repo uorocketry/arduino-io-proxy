@@ -22,6 +22,8 @@ struct DCMotorInfo
     int targetPosition = 0;
     int lastPosition = 0;
     DCMotorDirection direction = DCMotorDirection::Stopped;
+    bool minLimitSwitch = 0;
+    bool maxLimitSwitch = false;
 };
 
 void initDCMotor(const RocketryProto_DCMotorInit &message);
