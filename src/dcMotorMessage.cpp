@@ -45,7 +45,7 @@ void stop(DCMotorInfo &info)
     analogWrite(info.motorReversePin, 0);
 }
 
-void controlDCMotor(uint8_t forwardPin, uint8_t reversePin, int position)
+void controlDCMotor(uint8_t forwardPin, uint8_t reversePin, int targetPosition)
 {
     DCMotorInfo *motor = findDCMotor(forwardPin, reversePin);
 
@@ -53,14 +53,14 @@ void controlDCMotor(uint8_t forwardPin, uint8_t reversePin, int position)
     {
         sendEventMessage(RocketryProto_EventTypes_DC_MOTOR_CONTROL, forwardPin);
 
-        motor->targetPosition = position;
+        motor->targetPosition = targetPosition;
         motor->active = true;
 
-        if (motor->lastPosition < position)
+        if (motor->lastPosition < targetPosition)
         {
             forward(*motor);
         }
-        else if (motor->lastPosition == position)
+        else if (motor->lastPosition == targetPosition)
         {
             stop(*motor);
         }
@@ -119,14 +119,15 @@ void dcMotorControlLoop()
     for (uint16_t i = 0; i < motorCount; i++)
     {
         int position = analogRead(dcMotors[i].potentiometerPin);
+        dcMotors[i].minLimitSwitch = digitalRead(dcMotors[i].limitSwitchMinPin);
+        dcMotors[i].maxLimitSwitch = digitalRead(dcMotors[i].limitSwitchMaxPin);
+
         if (dcMotors[i].active)
         {
             DCMotorDirection direction = dcMotors[i].direction;
-            bool limitMin = digitalRead(dcMotors[i].limitSwitchMinPin);
-            bool limitMax = digitalRead(dcMotors[i].limitSwitchMaxPin);
 
-            if ((direction == DCMotorDirection::Reverse && limitMin) ||
-                (direction == DCMotorDirection::Forward && limitMax) ||
+            if ((direction == DCMotorDirection::Reverse && dcMotors[i].minLimitSwitch) ||
+                (direction == DCMotorDirection::Forward && dcMotors[i].maxLimitSwitch) ||
                 (position < dcMotors[i].targetPosition && direction == DCMotorDirection::Reverse) ||
                 (position > dcMotors[i].targetPosition && direction == DCMotorDirection::Forward))
             {
