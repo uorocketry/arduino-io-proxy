@@ -1,3 +1,4 @@
+#include "dcMotorMessage.h"
 #include "digitalMessage.h"
 #include "logging.h"
 #include "servoMessage.h"
@@ -24,12 +25,15 @@ void loop()
     cobsPacketSerial.update();
 
     // Send state each second
-    if (millis() - lastStateSend > 1000)
+    if (millis() - lastStateSend > 50)
     {
         sendServoState();
         sendDigitalState();
+        sendDCMotorState();
         lastStateSend = millis();
     }
+
+    dcMotorControlLoop();
 }
 
 void (*resetFunc)(void) = 0;
@@ -62,6 +66,12 @@ void onPacketReceived(const uint8_t *buffer, size_t size)
         break;
     case RocketryProto_ArduinoIn_digitalControl_tag:
         controlDigital(message.data.digitalControl);
+        break;
+    case RocketryProto_ArduinoIn_dcMotorInit_tag:
+        initDCMotor(message.data.dcMotorInit);
+        break;
+    case RocketryProto_ArduinoIn_dcMotorControl_tag:
+        controlDCMotor(message.data.dcMotorControl);
         break;
     case RocketryProto_ArduinoIn_reset_tag:
         resetFunc();
