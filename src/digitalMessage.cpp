@@ -54,9 +54,10 @@ void initDigital(const RocketryProto_DigitalInit &digitalInit)
         }
 
         pinMode(pin, OUTPUT);
+        digitalWrite(pin, digitalInit.safeState);
 
         digitalPins[digitalCount].pin = pin;
-        digitalPins[digitalCount].activated = false;
+        digitalPins[digitalCount].activated = digitalInit.safeState;
         digitalCount++;
 
         sendEventMessage(RocketryProto_EventTypes_DIGITAL_INIT, pin);
