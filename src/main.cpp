@@ -7,6 +7,7 @@
 #include <ArduinoComm.pb.h>
 #include <main.h>
 #include <pb_decode.h>
+#include "stepperMotorMessage.h"
 
 COBSPacketSerial cobsPacketSerial;
 long lastStateSend = 0;
@@ -16,6 +17,8 @@ void setup()
     cobsPacketSerial.begin(57600);
 
     cobsPacketSerial.setPacketHandler(&onPacketReceived);
+
+    initStepper();
 
     sendEventMessage(RocketryProto_EventTypes_RESET);
 }
@@ -34,6 +37,7 @@ void loop()
     }
 
     dcMotorControlLoop();
+    stepperMotorControlLoop();
 }
 
 void (*resetFunc)(void) = 0;
@@ -72,6 +76,9 @@ void onPacketReceived(const uint8_t *buffer, size_t size)
         break;
     case RocketryProto_ArduinoIn_dcMotorControl_tag:
         controlDCMotor(message.data.dcMotorControl);
+        break;
+    case RocketryProto_ArduinoIn_stepperMotorControl_tag:
+        controlStepperMotor(message.data.stepperMotorControl);
         break;
     case RocketryProto_ArduinoIn_reset_tag:
         resetFunc();
