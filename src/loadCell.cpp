@@ -16,7 +16,7 @@ constexpr uint8_t DOUT = A4;
 // Single clock cycle delay
 #define NOP __asm__ __volatile__("nop\n\t")
 
-void sendLoadCellState(int val)
+void sendLoadCellState(uint32_t val)
 {
     RocketryProto_ArduinoOut msg = RocketryProto_ArduinoOut_init_zero;
     msg.which_data = RocketryProto_ArduinoOut_loadCellState_tag;
@@ -49,25 +49,27 @@ void sendLoadCellState() {
         return;
     }
 
-    int32_t val = 0;
+    uint32_t val = 0;
 
-    cli();  // Disable interrupts
+    cli();
 
     for (int i = 23; i >= 0; i--)
     {
-        PORT_CLOCK |= BIT_CLOCK;                // Clock high
-        NOP; NOP; NOP; NOP; NOP;  NOP;  // Delay
-        PORT_CLOCK &= ~BIT_CLOCK;               // Clock low
+        digitalWrite(PDSCK, HIGH);
+        digitalWrite(PDSCK, LOW);
 
-        val |= ((int32_t)(PIN_OUT & BIT_OUT)) << i;
+        val |= ((int32_t) digitalRead(DOUT)) << i;
     }
 
     // Clock one more time for channel A, gain 128
-    PORT_CLOCK |= BIT_CLOCK;                // Clock high
-    NOP; NOP; NOP; NOP; NOP;  NOP;  // Delay
-    PORT_CLOCK &= ~BIT_CLOCK;               // Clock low
+    digitalWrite(PDSCK, HIGH);
+    digitalWrite(PDSCK, LOW);
 
-    sei(); // Enable interrupts
+    if (val & 0x800000) {
+        val |= 0xFF000000;
+    }
+
+    sei();
 
     sendLoadCellState(val);
 }
