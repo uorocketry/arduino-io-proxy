@@ -58,32 +58,18 @@ void sendLoadCellState() {
         digitalWrite(PDSCK, HIGH);
         digitalWrite(PDSCK, LOW);
 
-        val |= (digitalRead(DOUT) << i);
+        val |= ((int32_t) digitalRead(DOUT)) << i;
     }
 
     // Clock one more time for channel A, gain 128
     digitalWrite(PDSCK, HIGH);
     digitalWrite(PDSCK, LOW);
 
+    if (val & 0x800000) {
+        val |= 0xFF000000;
+    }
+
     sei();
-
-    // cli();  // Disable interrupts
-
-    // for (int i = 23; i >= 0; i--)
-    // {
-    //     PORT_CLOCK |= BIT_CLOCK;                // Clock high
-    //     NOP; NOP; NOP; NOP; NOP;  NOP;  // Delay
-    //     PORT_CLOCK &= ~BIT_CLOCK;               // Clock low
-
-    //     val |= ((int32_t)(PIN_OUT & BIT_OUT)) << i;
-    // }
-
-    // // Clock one more time for channel A, gain 128
-    // PORT_CLOCK |= BIT_CLOCK;                // Clock high
-    // NOP; NOP; NOP; NOP; NOP;  NOP;  // Delay
-    // PORT_CLOCK &= ~BIT_CLOCK;               // Clock low
-
-    // sei(); // Enable interrupts
 
     sendLoadCellState(val);
 }
