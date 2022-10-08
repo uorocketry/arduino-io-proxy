@@ -1,5 +1,6 @@
 #include "dcMotorMessage.h"
 #include "digitalMessage.h"
+#include "loadCell.h"
 #include "logging.h"
 #include "servoMessage.h"
 #include "utils.h"
@@ -17,6 +18,8 @@ void setup()
 
     cobsPacketSerial.setPacketHandler(&onPacketReceived);
 
+    loadCellInit();
+
     sendEventMessage(RocketryProto_EventTypes_RESET);
 }
 
@@ -30,6 +33,7 @@ void loop()
         sendServoState();
         sendDigitalState();
         sendDCMotorState();
+        sendLoadCellState();
         lastStateSend = millis();
     }
 
